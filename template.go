@@ -1,5 +1,9 @@
 package remark
 
+type tmplParamsIndex struct {
+	SrcPath string
+}
+
 var tmplIndex = `
 <!DOCTYPE html>
 <html>
@@ -18,6 +22,7 @@ var tmplIndex = `
       }
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
     </style>
+    <link rel="stylesheet" href="/custom.css" />
   </head>
   <body>
     <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript">

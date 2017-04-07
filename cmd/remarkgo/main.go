@@ -10,24 +10,35 @@ import (
 
 func main() {
 	var (
-		addr string
+		addr    string
+		cssPath string
 	)
 
 	flag.StringVar(&addr, "l", "localhost:8080", "listen addr and port.")
+	flag.StringVar(&cssPath, "c", "", "path to custom.css")
 	flag.Parse()
 
-	server, err := remark.NewServer(addr)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "failed to start server: %s", err.Error())
-		os.Exit(1)
+	var err error
+	options := []remark.ServerOption{}
+
+	if cssPath != "" {
+		options = append(options, remark.ServerOptionCustomCSSPath(cssPath))
 	}
+
+	server, err := remark.NewServer(addr, options...)
+	handleError(err, "failed to start server")
 
 	fmt.Printf("listen on http://%s\n", addr)
-
-	if server.Serve() != nil {
-		fmt.Fprintf(os.Stderr, "failed to server slideshow: %s", err.Error())
-		os.Exit(1)
-	}
+	handleError(server.Serve(), "failed to server slideshow")
 
 	return
+}
+
+func handleError(err error, msg string) {
+	if err == nil {
+		return
+	}
+
+	fmt.Fprintf(os.Stderr, "%s: %s", msg, err.Error())
+	os.Exit(1)
 }

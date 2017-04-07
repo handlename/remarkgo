@@ -6,8 +6,9 @@ import (
 )
 
 type Server struct {
-	ListenAddr string
-	SrcPath    string
+	ListenAddr    string
+	SrcPath       string
+	CustomCSSPath string
 
 	tmplIndex *template.Template
 }
@@ -17,6 +18,13 @@ type ServerOption func(*Server) error
 func ServerOptionSrcPath(path string) ServerOption {
 	return func(s *Server) error {
 		s.SrcPath = path
+		return nil
+	}
+}
+
+func ServerOptionCustomCSSPath(path string) ServerOption {
+	return func(s *Server) error {
+		s.CustomCSSPath = path
 		return nil
 	}
 }
@@ -47,6 +55,7 @@ func (s *Server) initTemplates() {
 func (s *Server) Serve() error {
 	http.HandleFunc("/", s.rootHandler)
 	http.HandleFunc("/"+s.SrcPath, s.staticHandler)
+	http.HandleFunc("/"+s.CustomCSSPath, s.staticHandler)
 
 	return http.ListenAndServe(s.ListenAddr, nil)
 }
@@ -57,13 +66,12 @@ func (s *Server) rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.tmplIndex.Execute(w, map[string]string{
-		"SrcPath": s.SrcPath,
+	s.tmplIndex.Execute(w, tmplParamsIndex{
+		SrcPath: s.SrcPath,
 	})
 }
 
 func (s *Server) staticHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
-
 	http.ServeFile(w, r, "."+r.URL.Path)
 }
