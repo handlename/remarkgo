@@ -46,13 +46,24 @@ func (s *Server) initTemplates() {
 
 func (s *Server) Serve() error {
 	http.HandleFunc("/", s.rootHandler)
-	http.Handle("/"+s.SrcPath, http.FileServer(http.Dir(".")))
+	http.HandleFunc("/"+s.SrcPath, s.staticHandler)
 
 	return http.ListenAndServe(s.ListenAddr, nil)
 }
 
 func (s *Server) rootHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/" {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		return
+	}
+
 	s.tmplIndex.Execute(w, map[string]string{
 		"SrcPath": s.SrcPath,
 	})
+}
+
+func (s *Server) staticHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-cache")
+
+	http.ServeFile(w, r, "."+r.URL.Path)
 }
