@@ -55,7 +55,7 @@ func (s *Server) initTemplates() {
 func (s *Server) Serve() error {
 	http.HandleFunc("/", s.rootHandler)
 	http.HandleFunc("/"+s.SrcPath, s.staticHandler)
-	http.HandleFunc("/"+s.CustomCSSPath, s.staticHandler)
+	http.HandleFunc("/static/", s.staticHandler)
 
 	return http.ListenAndServe(s.ListenAddr, nil)
 }
