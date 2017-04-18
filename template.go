@@ -28,11 +28,15 @@ var tmplIndex = `
     <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript">
     </script>
     <script type="text/javascript">
+      var slideshow;
+
       function load() {
-        remark.create({ sourceUrl: "/index.md" });
+        slideshow = remark.create({ sourceUrl: "/index.md" });
       }
 
       function reset() {
+        slideshow.pause();
+
         document.getElementsByTagName("body").forEach(function(elem) {
           elem.classList.remove("remark-container");
         });
