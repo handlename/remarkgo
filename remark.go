@@ -31,8 +31,9 @@ func ServerOptionCustomCSSPath(path string) ServerOption {
 
 func NewServer(addr string, options ...ServerOption) (*Server, error) {
 	s := Server{
-		ListenAddr: addr,
-		SrcPath:    "index.md",
+		ListenAddr:    addr,
+		SrcPath:       "index.md",
+		CustomCSSPath: "",
 	}
 
 	for _, o := range options {
@@ -55,7 +56,7 @@ func (s *Server) initTemplates() {
 func (s *Server) Serve() error {
 	http.HandleFunc("/", s.rootHandler)
 	http.HandleFunc("/"+s.SrcPath, s.staticHandler)
-	http.HandleFunc("/static/", s.staticHandler)
+	http.HandleFunc("/"+s.CustomCSSPath, s.staticHandler)
 
 	return http.ListenAndServe(s.ListenAddr, nil)
 }
@@ -67,7 +68,8 @@ func (s *Server) rootHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	s.tmplIndex.Execute(w, tmplParamsIndex{
-		SrcPath: s.SrcPath,
+		SrcPath:       s.SrcPath,
+		CustomCSSPath: s.CustomCSSPath,
 	})
 }
 

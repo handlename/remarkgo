@@ -1,7 +1,8 @@
 package remark
 
 type tmplParamsIndex struct {
-	SrcPath string
+	SrcPath       string
+	CustomCSSPath string
 }
 
 var tmplIndex = `
@@ -22,7 +23,9 @@ var tmplIndex = `
       }
       .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
     </style>
-    <link rel="stylesheet" href="/static/custom.css" />
+    {{ if .CustomCSSPath }}
+    <link rel="stylesheet" href="/{{ .CustomCSSPath }}" />
+    {{ end }}
   </head>
   <body>
     <script src="http://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript">
