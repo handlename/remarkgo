@@ -113,7 +113,6 @@ func (s *Server) jsHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) staticHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
-	w.WriteHeader(http.StatusOK)
 
 	http.ServeFile(w, r, "."+r.URL.Path)
 }
