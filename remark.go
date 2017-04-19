@@ -10,7 +10,8 @@ type Server struct {
 	SrcPath       string
 	CustomCSSPath string
 
-	tmplIndex *template.Template
+	tmplIndexHtml *template.Template
+	tmplIndexJs   *template.Template
 }
 
 type ServerOption func(*Server) error
@@ -48,18 +49,30 @@ func NewServer(addr string, options ...ServerOption) (*Server, error) {
 }
 
 func (s *Server) initTemplates() {
-	index, err := Asset("template/index.html")
-	if err != nil {
-		panic(err)
+	{
+		data, err := Asset("template/index.html")
+		if err != nil {
+			panic(err)
+		}
+
+		s.tmplIndexHtml = template.Must(template.New("index.html").Parse(string(data)))
 	}
 
-	s.tmplIndex = template.Must(template.New("index").Parse(string(index)))
+	{
+		data, err := Asset("template/index.js")
+		if err != nil {
+			panic(err)
+		}
+
+		s.tmplIndexJs = template.Must(template.New("index.js").Parse(string(data)))
+	}
 
 	return
 }
 
 func (s *Server) Serve() error {
 	http.HandleFunc("/", s.rootHandler)
+	http.HandleFunc("/index.js", s.jsHandler)
 	http.HandleFunc("/"+s.SrcPath, s.staticHandler)
 
 	if s.CustomCSSPath != "" {
@@ -75,13 +88,32 @@ func (s *Server) rootHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	s.tmplIndex.Execute(w, tmplParamsIndex{
+	w.Header().Set("Cache-Control", "no-cache")
+	w.WriteHeader(http.StatusOK)
+
+	err := s.tmplIndexHtml.Execute(w, tmplParamsIndex{
 		SrcPath:       s.SrcPath,
 		CustomCSSPath: s.CustomCSSPath,
 	})
+	if err != nil {
+		panic(err)
+	}
+}
+
+func (s *Server) jsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Content-Type", "text/javascript")
+	w.WriteHeader(http.StatusOK)
+
+	err := s.tmplIndexJs.Execute(w, nil)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (s *Server) staticHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Cache-Control", "no-cache")
+	w.WriteHeader(http.StatusOK)
+
 	http.ServeFile(w, r, "."+r.URL.Path)
 }

@@ -1,4 +1,4 @@
-cmd/remarkgo/remarkgo: *.go template/*.html cmd/remarkgo/main.go
+cmd/remarkgo/remarkgo: *.go template/* cmd/remarkgo/main.go
 	go-bindata -pkg remark template
 	cd cmd/remarkgo && go build
 
