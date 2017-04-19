@@ -11,15 +11,24 @@ import (
 func main() {
 	var (
 		addr    string
+		src     string
 		cssPath string
 	)
 
+	// TODO: read default value from constants in remarkgo.
+	flag.StringVar(&src, "s", "index.md", "src markdown file.")
 	flag.StringVar(&addr, "l", "localhost:8080", "listen addr and port.")
 	flag.StringVar(&cssPath, "c", "", "path to custom.css")
 	flag.Parse()
 
 	var err error
 	options := []remark.ServerOption{}
+
+	if src == "" {
+		handleError(fmt.Errorf("src path required"), "src path must not be empty")
+	}
+
+	options = append(options, remark.ServerOptionSrcPath(src))
 
 	if cssPath != "" {
 		options = append(options, remark.ServerOptionCustomCSSPath(cssPath))

@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function() {
-    let slideshow;
+    let slideshow,
+        markdownPath;
 
     function load() {
-        slideshow = remark.create({ sourceUrl: "/index.md" });
+        slideshow = remark.create({ sourceUrl: markdownPath });
     }
 
     function reset() {
@@ -30,12 +31,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    document.addEventListener("keyup", function (e) {
-        if (e.key === "r") {
-            reset();
-            load();
-        }
-    });
+    function initSrcPath() {
+        markdownPath = document.getElementById("markdownPath").value;
+    }
 
-    load();
+    function initEvents() {
+        document.addEventListener("keyup", function (e) {
+            if (e.key === "r") {
+                reset();
+                load();
+            }
+        });
+    }
+
+    function init() {
+        initSrcPath();
+        initEvents();
+        load();
+    }
+
+    init();
 });
