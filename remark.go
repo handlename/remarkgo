@@ -48,7 +48,12 @@ func NewServer(addr string, options ...ServerOption) (*Server, error) {
 }
 
 func (s *Server) initTemplates() {
-	s.tmplIndex = template.Must(template.New("index").Parse(tmplIndex))
+	index, err := Asset("template/index.html")
+	if err != nil {
+		panic(err)
+	}
+
+	s.tmplIndex = template.Must(template.New("index").Parse(string(index)))
 
 	return
 }
