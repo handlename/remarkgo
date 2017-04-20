@@ -5,6 +5,12 @@ import (
 	"net/http"
 )
 
+const (
+	DefaultListenAddr = "localhost:8080"
+	DefaultSrcPath    = "index.md"
+	DefaultCssPath    = ""
+)
+
 type Server struct {
 	ListenAddr    string
 	SrcPath       string
@@ -32,9 +38,9 @@ func ServerOptionCustomCSSPath(path string) ServerOption {
 
 func NewServer(addr string, options ...ServerOption) (*Server, error) {
 	s := Server{
-		ListenAddr:    addr,
-		SrcPath:       "index.md",
-		CustomCSSPath: "",
+		ListenAddr:    DefaultListenAddr,
+		SrcPath:       DefaultSrcPath,
+		CustomCSSPath: DefaultCssPath,
 	}
 
 	for _, o := range options {

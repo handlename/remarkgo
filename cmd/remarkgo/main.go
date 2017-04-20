@@ -15,10 +15,9 @@ func main() {
 		cssPath string
 	)
 
-	// TODO: read default value from constants in remarkgo.
-	flag.StringVar(&src, "s", "index.md", "src markdown file.")
-	flag.StringVar(&addr, "l", "localhost:8080", "listen addr and port.")
-	flag.StringVar(&cssPath, "c", "", "path to custom.css")
+	flag.StringVar(&addr, "l", remark.DefaultListenAddr, "listen addr and port.")
+	flag.StringVar(&src, "s", remark.DefaultSrcPath, "src markdown file.")
+	flag.StringVar(&cssPath, "c", remark.DefaultCssPath, "path to custom css file.")
 	flag.Parse()
 
 	var err error
