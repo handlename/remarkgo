@@ -22,18 +22,14 @@ func main() {
 
 	var err error
 	options := []remark.ServerOption{}
-
-	if src == "" {
-		handleError(fmt.Errorf("src path required"), "src path must not be empty")
-	}
-
+	options = append(options, remark.ServerOptionListenAddr(addr))
 	options = append(options, remark.ServerOptionSrcPath(src))
 
 	if cssPath != "" {
 		options = append(options, remark.ServerOptionCustomCSSPath(cssPath))
 	}
 
-	server, err := remark.NewServer(addr, options...)
+	server, err := remark.NewServer(options...)
 	handleError(err, "failed to start server")
 
 	fmt.Printf("listen on http://%s\n", addr)

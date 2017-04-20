@@ -1,6 +1,7 @@
 package remark
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -22,8 +23,23 @@ type Server struct {
 
 type ServerOption func(*Server) error
 
+func ServerOptionListenAddr(addr string) ServerOption {
+	return func(s *Server) error {
+		if addr == "" {
+			return fmt.Errorf("listen addr must not be empty.")
+		}
+
+		s.ListenAddr = addr
+		return nil
+	}
+}
+
 func ServerOptionSrcPath(path string) ServerOption {
 	return func(s *Server) error {
+		if path == "" {
+			return fmt.Errorf("src path must not be empty.")
+		}
+
 		s.SrcPath = path
 		return nil
 	}
@@ -36,7 +52,7 @@ func ServerOptionCustomCSSPath(path string) ServerOption {
 	}
 }
 
-func NewServer(addr string, options ...ServerOption) (*Server, error) {
+func NewServer(options ...ServerOption) (*Server, error) {
 	s := Server{
 		ListenAddr:    DefaultListenAddr,
 		SrcPath:       DefaultSrcPath,
